@@ -14,29 +14,25 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 2: Set up Node.js
+      # Step 2: Set up Node.js (skip install if you don't need it)
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'  # Adjust if necessary
+          node-version: '16'  # You can remove this step if you don't need Node.js
 
-      # Step 3: Install dependencies (if you have any)
-      - name: Install dependencies
-        run: |
-          npm install  # This step can be skipped if there are no dependencies
-
-      # Step 4: Run automated tests (using our test.js)
+      # Step 3: Skip the install step since no dependencies are needed
+      # Run the simple tests without installing anything
       - name: Run automated tests
         run: |
           node test.js  # Run the simple tests
 
-      # Step 5: Build the web application
+      # Step 4: Build the web application
       - name: Build application
         run: |
           mkdir dist
           find . -mindepth 1 -maxdepth 1 ! -name dist -exec cp -r {} dist/ \;
 
-      # Step 6: Show the contents of the build folder
+      # Step 5: Show the contents of the build folder
       - name: Show build folder contents
         run: |
           ls dist
