@@ -29,7 +29,8 @@ jobs:
       - name: Build application
         run: |
           mkdir dist
-          cp -r * dist/  # This copies all files to the dist folder (simulating build)
+          # Copy all files except the dist folder itself
+          find . -mindepth 1 -maxdepth 1 ! -name dist -exec cp -r {} dist/ \;
 
       # Step 5: Show the build output (optional)
       - name: Show build folder contents
