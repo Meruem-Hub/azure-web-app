@@ -14,13 +14,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 2: Set up Node.js environment
+      # Step 2: Set up Node.js (Optional, only if you need it)
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '16' # Skip this if you don't use Node.js
 
-      # Step 3: Install dependencies
+      # Step 3: Install dependencies (Optional for a static site)
       - name: Install dependencies
         run: |
           echo "No dependencies to install for this project"
@@ -28,4 +28,10 @@ jobs:
       # Step 4: Build the application
       - name: Build application
         run: |
-          echo "No build step required for static files"
+          mkdir dist
+          cp -r * dist/  # This copies all files to the dist folder (simulating build)
+
+      # Step 5: Show the build output (optional)
+      - name: Show build folder contents
+        run: |
+          ls dist
