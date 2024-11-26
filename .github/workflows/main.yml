@@ -10,29 +10,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Check out the repository code
+      # Step 1: Checkout code
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 2: Set up Node.js (Optional, only if you need it)
+      # Step 2: Set up Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16' # Skip this if you don't use Node.js
+          node-version: '16'  # Adjust if necessary
 
-      # Step 3: Install dependencies (Optional for a static site)
+      # Step 3: Install dependencies (if you have any)
       - name: Install dependencies
         run: |
-          echo "No dependencies to install for this project"
+          npm install  # This step can be skipped if there are no dependencies
 
-      # Step 4: Build the application
+      # Step 4: Run automated tests (using our test.js)
+      - name: Run automated tests
+        run: |
+          node test.js  # Run the simple tests
+
+      # Step 5: Build the web application
       - name: Build application
         run: |
           mkdir dist
-          # Copy all files except the dist folder itself
           find . -mindepth 1 -maxdepth 1 ! -name dist -exec cp -r {} dist/ \;
 
-      # Step 5: Show the build output (optional)
+      # Step 6: Show the contents of the build folder
       - name: Show build folder contents
         run: |
           ls dist
