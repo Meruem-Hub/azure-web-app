@@ -14,25 +14,33 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 2: Set up Node.js (skip install if you don't need it)
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'  # You can remove this step if you don't need Node.js
-
-      # Step 3: Skip the install step since no dependencies are needed
-      # Run the simple tests without installing anything
+      # Step 2: Run automated tests (optional)
       - name: Run automated tests
         run: |
           node test.js  # Run the simple tests
 
-      # Step 4: Build the web application
+      # Step 3: Build the web application
       - name: Build application
         run: |
           mkdir dist
           find . -mindepth 1 -maxdepth 1 ! -name dist -exec cp -r {} dist/ \;
 
-      # Step 5: Show the contents of the build folder
+      # Step 4: Build the Docker image
+      - name: Build Docker image
+        run: |
+          docker build -t my-web-app .
+
+      # Step 5: Push the Docker image to Docker Hub (Optional)
+      - name: Push Docker image to Docker Hub
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+          docker tag my-web-app $DOCKER_USERNAME/my-web-app:latest
+          docker push $DOCKER_USERNAME/my-web-app:latest
+
+      # Step 6: Show the contents of the build folder
       - name: Show build folder contents
         run: |
           ls dist
