@@ -1,32 +1,39 @@
-name: Deploy to Azure Web App with Docker
+name: CI/CD Pipeline
 
 on:
   push:
     branches:
-      - main  # Deploy on push to the main branch
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout code
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v2
+      # Step 2: Set up Docker
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      # Step 3: Log in to Azure
+      - name: Log in to Azure
+        uses: azure/login@v1
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Build Docker image
-        run: docker build -t your_dockerhub_username/azure-web-app .
+      # Step 4: Build and push Docker image to Azure Container Registry (Optional)
+      - name: Build Docker image and push to ACR (Optional if using Docker Hub)
+        run: |
+          docker build -t ghcr.io/${{ secrets.AZURE_WEBAPP_NAME }} .
+          docker push ghcr.io/${{ secrets.AZURE_WEBAPP_NAME }}
 
-      - name: Push Docker image to Docker Hub
-        run: docker push your_dockerhub_username/azure-web-app:latest
-
-      - name: Deploy Docker image to Azure Web App
-        uses: azure/webapps-container-deploy@v2
+      # Step 5: Deploy Docker container to Azure Web App
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
         with:
-          app-name: YOUR_APP_NAME  # Replace with your Azure Web App name
-          images: your_dockerhub_username/azure-web-app:latest
+          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
+          slot-name: 'production'
+          images: ghcr.io/${{ secrets.AZURE_WEBAPP_NAME }}:latest
